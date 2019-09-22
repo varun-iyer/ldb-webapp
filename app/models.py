@@ -24,28 +24,34 @@ class Document(db.Model):
     meta = db.Column(JSON, default=None)
 
     def __getitem__(self, key):
-        return self.meta[key].astext
+        return self.meta[key]
 
     def __hash__(self):
-        try:
-            return self['DOI'][0].__hash__()
-        except (KeyError, IndexError):
-            try:
-                return self['key'].__hash__()
-            except (KeyError, IndexError):
-                return self['title'][0].__hash__()
+        return self.id.__hash__()
 
     def __str__(self):
         try:
-            return self['title'][0]
+            if isinstance(self['title'], list):
+                return self['title'][0]
+            else:
+                return self['title']
         except (KeyError, IndexError):
-            try:
+            pass
+        try:
+            if isinstance(self['DOI'], list):
                 return self['DOI'][0]
-            except (KeyError, IndexError):
-                return self['key']
+            else:
+                return self['DOI']
+        except (KeyError, IndexError):
+            pass
+        return '<Document {}>'.format(self.id)
 
     def __repr__(self):
         try:
-            return self['DOI'][0]
+            if isinstance(self['DOI'], list):
+                return self['DOI'][0]
+            else:
+                return self['DOI']
         except (KeyError, IndexError):
-            return self['key']
+            pass
+        return '<Document {}>'.format(self.id)
