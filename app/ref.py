@@ -22,9 +22,9 @@ def get_doc(doi):
     if doc is None:
         pub = cr_get_pub(doi)
         doc = Document(doi=d, meta=pub)
+        print("Added document {}".format(doc))
         db.session.add(doc)
-    print("Added document {}".format(doc))
-    db.session.commit()
+        db.session.commit()
     return doc
 
 
@@ -39,6 +39,14 @@ def build_graph(doi, depth=2):
         doc = get_doc(doi)
     graph.add_node(doc)
     if depth == 0:
+        return graph
+
+    if doc.queried:
+        for ref in doc.references:
+            graph.add_node(ref)
+            graph.add_edge(doc, ref)
+            refgraph = build_graph(ref, depth=depth - 1)
+            graph = nx.compose(graph, refgraph)
         return graph
 
     try:
