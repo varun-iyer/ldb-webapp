@@ -1,44 +1,31 @@
+import re
 import networkx as nx
 import graphviz as gv
 from crossref_commons.retrieval import get_publication_as_json as cr_get_pub
-from app.models import Document, reference
+from app.models import Document
+from app import db
 
 
-class GraphPub(dict):
-    """
-    Wrapper for dict/JSON that implements a hash function that returns DOI
-    """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+def _doi_strip(doi):
+    return re.search('10.\d{4,9}/[-._;()/:A-Z0-9]+', doi).group()
 
-    def __hash__(self):
-        try:
-            return self['DOI'].__hash__()
-        except KeyError:
-            try:
-                return self['key'].__hash__()
-            except KeyError:
-                return self['title'][0].__hash__()
-
-    def __str__(self):
-        try:
-            return self['title'][0]
-        except (KeyError, IndexError):
-            try:
-                return self['DOI']
-            except KeyError:
-                return self['key']
-
-    def __repr__(self):
-        try:
-            return self['DOI']
-        except (KeyError, IndexError):
-            return self['key']
-         
  
-def get_pub(doi):
-    pub = cr_get_pub(doi)
-    return pub
+def get_doc(doi):
+    # from crossref website
+    d = doi
+    try:
+        d = _doi_strip(doi)
+    except AttributeError:
+        # handle this error with a user resp. saying invalid DOI
+        pass
+    doc = Document.query.filter(Document.doi==d).first()
+    if doc is None:
+        pub = cr_get_pub(doi)
+        doc = Document(doi=d, meta=pub)
+    db.session.add(doc)
+    print("Added document {}".format(doc))
+    db.session.commit()
+    return doc
 
 
 def build_graph(doi, depth=2):
@@ -46,30 +33,37 @@ def build_graph(doi, depth=2):
     Returns a graph of the stuff
     """
     graph = nx.DiGraph()
-    pub = doi
-    if isinstance(pub, str):
+    doc = doi
+    if isinstance(doc, str):
         # this is an initial call, get the publication
-        pub = GraphPub(get_pub(doi))
-    graph.add_node(pub)
+        doc = get_doc(doi)
+    graph.add_node(doc)
     if depth == 0:
         return graph
-    else:
+
+    try:
+        references = doc['reference']
+    except:
+        return graph
+    for r in references:
+        pub = r
         try:
-            references = pub['reference']
-        except:
-            return graph
-        for r in references:
-            try:
-                gr = GraphPub(get_pub(r['DOI']))
-            except KeyError:
-                gr = GraphPub(r)
-            # graph.add_node(gr)
-            # graph.add_edge(pub, gr)
-            graph.add_edge(pub, gr)
-            refgraph = build_graph(gr, depth=depth - 1)
-            # graph.add_node(refgraph)
-            graph = nx.compose(graph, refgraph)
+            d = r['DOI']
+            if isinstance(d, list):
+                d = d[0]
+            cites = get_doc(d)
+        except (KeyError, IndexError):
+            cites = Document(meta=r)
+        
+        doc.references.append(cites)
+        graph.add_node(cites)
+        graph.add_edge(doc, cites)
+        refgraph = build_graph(cites, depth=depth - 1)
+        graph = nx.compose(graph, refgraph)
+    doc.queried = True
+    db.session.commit()
     return graph
+ 
  
 def graph_svg(graph):
     '''
