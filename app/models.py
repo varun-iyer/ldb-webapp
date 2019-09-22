@@ -4,8 +4,8 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 reference = db.Table('reference',
-    db.Column('paper', db.Integer, db.ForeignKey('document.doi')),
-    db.Column('reference', db.Integer, db.ForeignKey('document.doi'))
+    db.Column('document', db.Integer, db.ForeignKey('document.id'), primary_key=True),
+    db.Column('reference', db.Integer, db.ForeignKey('document.id'), primary_key=True)
 )
  
  
@@ -14,7 +14,12 @@ class Document(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     doi = db.Column(db.String(64), index=True, unique=True)
-    references = db.relationship('Document', secondary=reference, backref='referenced_by')
+    references = db.relationship('Document', \
+            secondary=reference, \
+            backref=db.backref('referenced_by', lazy=True), \
+            primaryjoin=id==reference.c.document,
+            secondaryjoin=id==reference.c.reference
+        )
     queried = db.Column(db.Boolean, default=False)
     meta = db.Column(JSON, default=None)
 
