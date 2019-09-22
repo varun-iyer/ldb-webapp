@@ -22,7 +22,7 @@ def get_doc(doi):
     if doc is None:
         pub = cr_get_pub(doi)
         doc = Document(doi=d, meta=pub)
-    db.session.add(doc)
+        db.session.add(doc)
     print("Added document {}".format(doc))
     db.session.commit()
     return doc
