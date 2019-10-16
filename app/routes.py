@@ -30,3 +30,7 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+ 
+@app.route('/collections')
+def collections():
+    return render_template('collections.html')
