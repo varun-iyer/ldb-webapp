@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+	<h1> Collections </h1>
+		{% for collection in current_user.collections %}
+		<p> {{ collection.name }} </p>
+		{% endfor %}
+{% endblock %}
+

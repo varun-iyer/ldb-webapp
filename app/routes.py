@@ -16,9 +16,9 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username = form.username.data).first()
+        user = User.query.filter_by(email = form.email.data).first()
         if user is None:
-            flash('Invalid username!')
+            flash('Invalid email!')
             return redirect(url_for('login'))
         if not user.check_password(form.password.data):
             flash('Incorrect password!')
