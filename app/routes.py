@@ -2,8 +2,8 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from app.models import User
-from app import app
-from app.forms import LoginForm
+from app import app, db
+from app.forms import LoginForm, SignupForm
 
 @app.route('/')
 @app.route('/index')
@@ -38,4 +38,20 @@ def logout():
 @app.route('/collections')
 @login_required
 def collections():
+    return render_template('collections.html')
+ 
+@app.route('/signup', methods=['GET', 'POST'])
+@app.route('/register', methods=['GET', 'POST'])
+def signup():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = SignupForm()
+    if form.validate_on_submit():
+        user = User(email=form.email.data, name=form.name.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('Congratulations, you’re all signed up!')
+        return redirect(url_for('login'))
+    return render_template('signup.html', title='Sign Up for LDB', form=form)
     return render_template('collections.html')

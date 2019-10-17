@@ -11,6 +11,13 @@
 			{% endfor %}
 		</p>
 		<p>
+			{{ form.name.label }} <br>
+			{{ form.name(size=32) }} <br>
+			{% for error in form.name.errors %}
+				<span style="color: red;"> [{{error}}] </span>
+			{% endfor %}
+		</p>
+		<p>
 			{{ form.password.label }} <br>
 			{{ form.password(size=32) }} <br>
 			{% for error in form.password.errors %}
@@ -20,9 +27,7 @@
 		{% for message in get_flashed_messages() %}
 			<span style="color: red;"> [{{message}}] </span>
 		{% endfor %}
-		<p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
 		<p>{{ form.submit() }}</p>
-		<p><a href="{{ url_for('signup') }}"> Don’t have an account yet? Sign up here!</p>
 	</form>
 {% endblock %}
 

@@ -8,9 +8,14 @@
 			<a href="{{ url_for('index') }}">Home</a>
 			{% if current_user.is_anonymous %}
 			<a href="{{ url_for('login') }}">Login</a>
+			<a href="{{ url_for('signup') }}">Sign Up</a>
 			{% else %}
 			<a href="{{ url_for('collections') }}">Collections</a>
-			<a href="{{ url_for('logout') }}">Logout {{ current_user.name }} </a>
+				{% if current_user.name %}
+					<a href="{{ url_for('logout') }}">Logout {{ current_user.name }} </a>
+				{% else %}
+					<a href="{{ url_for('logout') }}">Logout </a>
+				{% endif %}
 			{% endif %}
 		</div>
 		<hr>
