@@ -1,4 +1,13 @@
 # LDB Minimum Viable Project
+## Installation
+You can install it locally by cloning + pip install -r requirements.txt
+
+You can also get it through pip but this is useless as you want to run it with flask, not python.
+
+Run with flask run while you’re in the tld.
+
+
+
 Forget your directories full of random arXiv-numbered PDFs or
 cryptically-labeled court documents.
 A librarian for research literature. Search, preview, and download articles.
