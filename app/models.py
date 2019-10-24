@@ -16,7 +16,7 @@ class User(UserMixin, db.Model):
     collections = db.relationship('Collection', secondary=user_collection)
 
     def __repr__(self):
-        return '<User {}>'.format(self.username)
+        return '<User {}>'.format(self.name)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
