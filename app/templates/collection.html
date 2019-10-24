@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+	<h1> Collection {{ collection.name }} </h1>
+	<a href="{{ url_for('add_document', cid=collection.id) }}">+ Add a new document</a>
+		{% for document in collection.documents %}
+		<p> {{ document.name }} </p>
+		{% endfor %}
+{% endblock %}
+

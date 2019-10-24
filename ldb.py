@@ -1,5 +1,5 @@
 from app import app, db
-from app.models import User, Collection
+from app.models import User, Collection, Document, user_collection
 
 @app.shell_context_processor
 def make_shell_context():

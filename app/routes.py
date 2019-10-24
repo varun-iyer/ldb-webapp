@@ -1,9 +1,9 @@
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from app.models import User, Collection, Document
 from app import app, db
-from app.forms import LoginForm, SignupForm, CollectionForm
+from app.forms import LoginForm, SignupForm, CollectionForm, DocumentForm
 
 @app.route('/')
 @app.route('/index')
@@ -65,3 +65,32 @@ def create_collection():
         db.session.commit()
         return redirect(url_for('collections'))
     return render_template('create_collection.html', form=form)
+ 
+ 
+@app.route('/collection/<int:cid>', methods=['GET'])
+@login_required
+def collection(cid):
+    if current_user not in Collection.query.get(cid).users:
+        return abort(404)
+    return render_template('collection.html', collection=Collection.query.get(cid))
+
+
+@app.route('/404')
+@app.errorhandler(404)
+def http_404(e):
+    return render_template('404.html'), 404
+ 
+ 
+@app.route('/collection/<int:cid>/documentadd', methods=['GET', 'POST'])
+@login_required
+def add_document(cid):
+    coll = Collection.query.get(cid)
+    if current_user not in coll.users:
+        return abort(404)
+    form = DocumentForm()
+    if form.validate_on_submit():
+        doc = Document(name=form.name.data)
+        coll.add_document(doc)
+        db.session.commit()
+        return redirect(url_for('collection', cid=cid))
+    return render_template('add_document.html', form=form)

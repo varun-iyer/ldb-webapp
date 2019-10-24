@@ -13,7 +13,8 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     name = db.Column(db.String(64), index=True, unique=False)
     password_hash = db.Column(db.String(128))
-    collections = db.relationship('Collection', secondary=user_collection)
+    collections = db.relationship('Collection', secondary=user_collection,
+            backref=(db.backref('users')))
 
     def __repr__(self):
         return '<User {}>'.format(self.name)
@@ -34,6 +35,9 @@ class Collection(db.Model):
     name = db.Column(db.String(128), index=True)
     description = db.Column(db.String(1024), index=True);
     documents = db.relationship('Document', backref='collection', lazy='dynamic')
+     
+    def add_document(self, document):
+        return self.documents.append(document)
 
     def __repr__(self):
         return '<Collection {}>'.format(self.name)
