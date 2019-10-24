@@ -19,3 +19,8 @@ class SignupForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('An account already exists for this email address')
+ 
+class CollectionForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    description = StringField('Description')
+    submit = SubmitField('Create')
