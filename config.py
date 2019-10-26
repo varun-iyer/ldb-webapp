@@ -7,3 +7,5 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    UPLOAD_FILES_DEST = '/home/varun/ldb/storage/'
+    UPLOADED_FILES_ALLOW = ''

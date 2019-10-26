@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from config import Config
 
+name = "ldb"
 app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)

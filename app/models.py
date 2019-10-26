@@ -19,6 +19,12 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return '<User {}>'.format(self.name)
 
+    def __eq__(self, user):
+        try:
+            return self.id == user.id
+        except AttributeError:
+            return False
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
          
@@ -47,6 +53,8 @@ class Document(db.Model):
     # TODO how to correlate documents that are the same in diff. collections?
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), index=True)
+    filename = db.Column(db.String(128), index=True)
+    mimetype = db.Column(db.String(128), index=True)
     collection_id = db.Column(db.Integer, db.ForeignKey('collection.id'))
 
  
