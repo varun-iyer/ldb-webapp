@@ -1,5 +1,5 @@
 from app import db, login
-from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy import JSON
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -14,7 +14,7 @@ class Document(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     doi = db.Column(db.String(64), index=True)
-    metadata = db.Column(JSON)
+    meta = db.Column(JSON)
 
     def __getitem__(self, key):
-        return self.metadata[key].astext
+        return self.meta[key].astext
