@@ -1,9 +1,0 @@
-{% extends "base.html" %}
-{% block content %}
-	<h1> Collections </h1>
-	<a href="{{ url_for('create_collection') }}">+ Create a new Collection</a>
-		{% for collection in current_user.collections %}
-		<p> <a href="{{ url_for('collection', cid=collection.id) }}">{{ collection.name }} </a></p>
-		{% endfor %}
-{% endblock %}
-
