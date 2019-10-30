@@ -1,7 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-<div>
-	<h1><span>LDB</span></h1>
-	<p><span>Cool citation manager. Some generated html. Good shit.</span></p>
-</div>
+<form action="" method="post" novalidate>
+	{{ form.hidden_tag() }}
+	<p>
+		{{ form.doi.label }} <br>
+		{{ form.doi(size=32) }} <br>
+		{% for error in form.doi.errors %}
+			<span style="color: red;"> [{{error}}] </span>
+		{% endfor %}
+	</p>
+
 {% endblock %}

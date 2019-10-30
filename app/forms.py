@@ -3,5 +3,5 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 
 class GraphForm(FlaskForm):
-    name = StringField('DOI', validators=[DataRequired()])
+    doi = StringField('DOI', validators=[DataRequired()])
     submit = SubmitField('Build Graph')
