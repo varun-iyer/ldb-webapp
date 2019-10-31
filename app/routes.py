@@ -17,4 +17,5 @@ def index():
 def results(doi):
     g = build_graph(unquote(doi))
     s = graph_svg(g)
+    return s
     return flask.render_template('results.html', graphsvg=s)
