@@ -16,7 +16,7 @@ class Document(db.Model):
     doi = db.Column(db.String(64), index=True, unique=True)
     references = db.relationship('Document', secondary=reference, backref='referenced_by')
     queried = db.Column(db.Boolean, default=False)
-    meta = db.Column(JSON)
+    meta = db.Column(JSON, default=None)
 
     def __getitem__(self, key):
         return self.meta[key].astext
