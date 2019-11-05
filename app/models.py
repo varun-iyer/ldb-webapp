@@ -13,7 +13,9 @@ class Document(db.Model):
     __tablename__ = 'document'
 
     id = db.Column(db.Integer, primary_key=True)
-    doi = db.Column(db.String(64), index=True)
+    doi = db.Column(db.String(64), index=True, unique=True)
+    references = db.relationship("Document", secondary=reference, backref="referenced_by")
+    queried = db.Column(db.Boolean, default=False)
     meta = db.Column(JSON)
 
     def __getitem__(self, key):
