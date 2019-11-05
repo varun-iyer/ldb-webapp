@@ -14,9 +14,33 @@ class Document(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     doi = db.Column(db.String(64), index=True, unique=True)
-    references = db.relationship("Document", secondary=reference, backref="referenced_by")
+    references = db.relationship('Document', secondary=reference, backref='referenced_by')
     queried = db.Column(db.Boolean, default=False)
     meta = db.Column(JSON)
 
     def __getitem__(self, key):
         return self.meta[key].astext
+
+    def __hash__(self):
+        try:
+            return self['DOI'][0].__hash__()
+        except (KeyError, IndexError):
+            try:
+                return self['key'].__hash__()
+            except (KeyError, IndexError):
+                return self['title'][0].__hash__()
+
+    def __str__(self):
+        try:
+            return self['title'][0]
+        except (KeyError, IndexError):
+            try:
+                return self['DOI'][0]
+            except (KeyError, IndexError):
+                return self['key']
+
+    def __repr__(self):
+        try:
+            return self['DOI'][0]
+        except (KeyError, IndexError):
+            return self['key']
